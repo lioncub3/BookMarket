@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BookMarket.Models.Book>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        @foreach(var category in ViewBag.Categories as IEnumerable<BookMarket.Models.Category>)
+        {
+            <a class="col-sm-2" asp-route-id="@category.Id">@category.Name</a>
+        }
+    </div>
+</div>
+<br />
+
+<div class="container">
+    <div class="row">
+        @if (Model != null)
+        {
+            @foreach (var book in Model)
+            {
+                <div class="card col-sm-3">
+                    <img class="card-img-top" src="@book.PhotoUrl" alt="Card image">
+                    <div class="card-body">
+                        <h4 class="card-title">@book.Name</h4>
+                        <p class="card-text">@book.Description</p>
+                        <a asp-action="Info" asp-route-id="@book.Id" class="btn btn-primary">Детальніше</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+                <div class="alert alert-info">
+                    <strong>Ще немає книг</strong>
+                </div>
+        }
+    </div>
+</div>
