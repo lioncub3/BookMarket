@@ -11,7 +11,6 @@ namespace BookMarket.Models
         [Key]
         [Display(Name = "ID")]
         public int Id { get; set; }
-        [Required]
         [MaxLength(100)]
         [Display(Name = "Ім\'я")]
         public string Name { get; set; }

@@ -36,8 +36,22 @@ namespace BookMarket.Controllers
 
         public IActionResult Info(int Id)
         {
-            ViewBag.Comments = db.Comments.Where(c => c.BookId == Id);
-            return View(db.Books.First(b => b.Id == Id));
+            BookComments model = new BookComments {
+                Book = db.Books.First(b => b.Id == Id),
+                Comments = db.Comments.Where(c => c.BookId == Id)
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Comment>> AddComment([FromBody]Comment comment)
+        {
+            IdentityUser user = await userManager.GetUserAsync(User);
+            comment.Name = user.UserName;
+            db.Comments.Add(comment);
+            await db.SaveChangesAsync();
+
+            return Json(comment);
         }
 
         public IActionResult Login(string ReturnUrl)

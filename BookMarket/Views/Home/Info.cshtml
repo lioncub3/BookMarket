@@ -1,83 +1,95 @@
-﻿@model BookMarket.Models.Book
+﻿@model BookMarket.Models.BookComments
 
-    @{
-        ViewData["Title"] = Model.Name;
-        List<Comment> comments = ViewBag.Comments as List<BookMarket.Models.Comment>;
-    }
+@{
+    Book book = Model.Book;
+    IEnumerable<Comment> comments = Model.Comments;
+    ViewData["Title"] = book.Name;
+}
 
-    <h2>Blog</h2>
+<h2>Blog</h2>
 
-    <div>
-        <h4>Blog</h4>
-        <hr />
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Description)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Description)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.Author)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.Author)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.DatePublication)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.DatePublication)
-            </dd>
-            <dt>
-                @Html.DisplayNameFor(model => model.CategoryId)
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.DatePublication)
-            </dd>
-        </dl>
-        <div class="w3-card-4 w3-margin w3-white">
-            <img src="@Html.DisplayFor(model => model.PhotoUrl)" alt="Norway" style="width:100%">
-        </div>
-        @*<div class="container">
-            <form asp-action="CreateComment" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div>
+    <h4>Blog</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Book.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Book.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Book.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Book.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Book.Author)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Book.Author)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Book.DatePublication)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Book.DatePublication)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Book.CategoryId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Book.DatePublication)
+        </dd>
+    </dl>
+    <div class="w3-card-4 w3-margin w3-white">
+        <img src="@Html.DisplayFor(model => model.Book.PhotoUrl)" alt="Norway" style="width:100%">
+    </div>
+    <div class="container">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <form>
                 <div class="form-group">
-                    <label class="control-label"></label>
-                    <input asp-for="Description" class="form-control" />
-                    <span asp-validation-for="Description" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label"></label>
-                    <input name="Content" class="form-control" />
-                    <span asp-validation-for="Content" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Photo" class="control-label">Фото</label>
-                    <input name="Photo" type="file" class="form-control" />
-                    <span asp-validation-for="Photo" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Створити" class="btn btn-default" />
+                    <label class="control-label">Ваш відгук</label>
+                    <input id="BookId" name="BookId" value="@Model.Book.Id" hidden />
+                    <input id="Content" name="Content" class="form-control" required />
+                    @*<span id="" class="text-danger"></span>*@
                 </div>
             </form>
-            @if (comments != null)
+        <button id="add-comment" class="btn btn-success">Відправити</button>
+        }
+        <div id="comments">
+            @foreach (var comment in Model.Comments)
             {
-                @foreach (var comment in comments)
-                {
-                    <div class="w3-card w3-margin w3-margin-top">
-                        <img src="/w3images/avatar_g.jpg" style="width:100%">
-                        <div class="w3-container w3-white">
-                            <h4><b>My Name</b></h4>
-                            <p>Just me, myself and I, exploring the universe of uknownment. I have a heart of love and a interest of lorem ipsum and mauris neque quam blog. I want to share my world with you.</p>
-                        </div>
-                    </div>
-                }
+                <div class="alert alert-success">
+                    <p>
+                        <strong>@comment.Name</strong> @comment.Content
+                    </p>
+                    @comment.Time
+                </div>
             }
-        </div>*@
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $('#add-comment').click(function () {
+        var comment = {
+            Content: $('#Content').val(),
+            BookId: $('#BookId').val()
+        };
+
+        $.ajax({
+            url: 'http://localhost:3466/Home/AddComment',
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(comment),
+            success: function (comment) {
+                $('#comments').append('<div class="alert alert-success"> <strong>Success!</strong> You should <a href="#" class="alert-link">read this message</a>.</div>');
+            }
+        });
+    });
+</script>
